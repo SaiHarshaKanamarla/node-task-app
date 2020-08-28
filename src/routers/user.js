@@ -14,11 +14,10 @@ router.post('/users',async (req,res) =>{
     //     console.log("Error!",error);
     //     res.status(400).send(error);        
     // })
-    // console.log("Request sent");
-
+    // console.log("Request sent");    
     try{
         await user1.save();
-        res.status(201).send(user1)
+        res.status(201).send(user1);
     }catch(error){
         res.status(404).send(error);
     }    
@@ -74,11 +73,16 @@ router.patch('/users/:id',async (req,res)=>{
     }
 
     try{
-        const updated =await User.findByIdAndUpdate(req.params.id,req.body,{new : true, runValidators : true}); 
-        if(!updated){
+        const new_user = await User.findById(req.params.id);        
+        updates.forEach((value) =>{
+            new_user[value] = req.body[value];
+        })        
+        await new_user.save();
+        //const updated =await User.findByIdAndUpdate(req.params.id,req.body,{new : true, runValidators : true}); 
+        if(!new_user){
             return res.status(404).send();
         }
-        res.status(200).send(updated);
+        res.status(200).send(new_user);
     }catch(error){  
         res.status(400).send(error);
     }
@@ -98,5 +102,14 @@ router.delete('/users/:id',async (req,res) =>{
         res.status(500).send();
     }
 });
+
+router.post('/users/login',async(req,res)=>{
+    try{
+        const user = await User.findByCredentials(req.body.email,req.body.password);
+        res.status(200).send(user);
+    }catch(error){
+        res.status(400).send();
+    }
+})
 
 module.exports = router;
