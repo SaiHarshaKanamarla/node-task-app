@@ -9,6 +9,7 @@ router.get('/test',(req,res)=>{
     res.send("this is from a new file");
 });
 
+// this is to create a user
 router.post('/users',async (req,res) =>{
     const user1 = new User(req.body);
     // user1.save().then(()=>{
@@ -27,6 +28,17 @@ router.post('/users',async (req,res) =>{
         res.status(404).send(error);
     }    
 
+});
+
+router.post('/users/login',async(req,res)=>{
+    try{
+        const user = await User.findByCredentials(req.body.email,req.body.password);
+        const token = await user.generateAuthToken();
+        res.status(200).send({user,token});
+        //res.send({user:user,token})
+    }catch(error){
+        res.status(400).send();
+    }
 });
 
 router.get('/users/me',auth,async (req,res) =>{ // here the second argument is the middleware function that we want to execute. This is the way we can integrate a middleware functionality to a route.
@@ -110,14 +122,27 @@ router.delete('/users/:id',async (req,res) =>{
     }
 });
 
-router.post('/users/login',async(req,res)=>{
-    try{
-        const user = await User.findByCredentials(req.body.email,req.body.password);
-        const token = await user.generateAuthToken();
-        res.status(200).send({user,token});
-    }catch(error){
-        res.status(400).send();
+
+router.post('/users/logout',auth,async(req,res)=>{
+    try{    
+        req.user.tokens = req.user.tokens.filter((token) => {
+            return token !== req.token;
+        })
+        await req.user.save();
+        res.send();
+    }catch(e){
+        res.status(500).send();
     }
-})
+});
+
+router.post('/users/logoutAll',auth,async(req,res)=>{
+    try{
+        req.user.tokens = []
+        req.user.save();
+        res.status(200).send("Successfully Logged out");
+    }catch(e){
+        res.status(500).send();
+    }
+});
 
 module.exports = router;

@@ -34,6 +34,12 @@ app.listen(port,()=>{
     console.log("Server is running on port "+port);
 });
 
+
+const pet = {
+    name : 'Hal'
+}
+
+
 const jwt = require('jsonwebtoken');
 
 const myFunc = async () =>{

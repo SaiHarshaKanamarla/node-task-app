@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema({
 
 });
 
-userSchema.statics.findByCredentials = async(email, password) => {
+userSchema.statics.findByCredentials = async(email, password) => { //statics -- on the User model
     const user = await User.findOne({email:email});
     if(!user){
         throw new Error("Unable to login");
@@ -65,13 +65,21 @@ userSchema.statics.findByCredentials = async(email, password) => {
 
 }
 
-userSchema.methods.generateAuthToken = async function(){
+userSchema.methods.generateAuthToken = async function(){ // methods --  for individual user we are operating on
     const user = this;
     const token = jwt.sign({_id: user._id.toString()},'thisismynewcourse');  
     user.tokens = user.tokens.concat({token : token});        
     await user.save();
     return token;
 
+}
+
+userSchema.methods.toJSON = function(){
+    const user = this;
+    const userData = user.toObject()
+    delete userData.password;
+    delete userData.tokens;
+    return userData;
 }
 
 // Hashing the plain text password before saving
