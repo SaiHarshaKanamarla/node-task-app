@@ -1,6 +1,10 @@
 const express = require('express');
 const router = new express.Router();
 const User = require('../models/user');
+
+//setting up a middleware for an individual route
+
+const auth = require('../middleware/auth');
 router.get('/test',(req,res)=>{
     res.send("this is from a new file");
 });
@@ -25,19 +29,21 @@ router.post('/users',async (req,res) =>{
 
 });
 
-router.get('/users',async (req,res) =>{
+router.get('/users/me',auth,async (req,res) =>{ // here the second argument is the middleware function that we want to execute. This is the way we can integrate a middleware functionality to a route.
     // User.find({}).then((users)=>{
     //     res.status(200).send(users);
     // }).catch((error) =>{
     //     res.status(500).send();   // internal server error
     // })
-
-    try{
-        const user = await User.find({});
-        res.status(200).send(user);
-    }catch(error){
-        res.status(404).send(error);
-    }
+    
+    //Here the async call back will only run if the middleware function 'auth' calls next()
+    // try{
+    //     const user = await User.find({});
+    //     res.status(200).send(user);
+    // }catch(error){
+    //     res.status(404).send(error);
+    // }
+    res.send(req.user);
 });
 
 router.get('/users/:id',async (req,res) =>{
