@@ -58,29 +58,29 @@ router.get('/users/me',auth,async (req,res) =>{ // here the second argument is t
     res.send(req.user);
 });
 
-router.get('/users/:id',async (req,res) =>{
-    const _id = req.params.id;   
-    // User.findById(_id).then((user) =>{
-    //     if(!user)
-    //         return res.status(404).send();
-    //     res.send(user);
-    // }).catch((error) =>{
-    //     res.status(500).send();
-    // })    
-    try{
-        const user = await User.findById({_id:_id});
-        if(!user){
-            res.status(404).send();
-        }else{
-            res.status(200).send(user);
-        }
-    }catch(error){
-        res.status(500).send(error);
-    }
-});
+// router.get('/users/:id',async (req,res) =>{
+//     const _id = req.params.id;   
+//     // User.findById(_id).then((user) =>{
+//     //     if(!user)
+//     //         return res.status(404).send();
+//     //     res.send(user);
+//     // }).catch((error) =>{
+//     //     res.status(500).send();
+//     // })    
+//     try{
+//         const user = await User.findById({_id:_id});
+//         if(!user){
+//             res.status(404).send();
+//         }else{
+//             res.status(200).send(user);
+//         }
+//     }catch(error){
+//         res.status(500).send(error);
+//     }
+// });
 
 //to update an existing record in the database
-router.patch('/users/:id',async (req,res)=>{ 
+router.patch('/users/me',auth,async (req,res)=>{ 
     
     const updates = Object.keys(req.body);
     const allowedUpdates = ['name','email','password','age'];
@@ -92,16 +92,17 @@ router.patch('/users/:id',async (req,res)=>{
     }
 
     try{
-        const new_user = await User.findById(req.params.id);        
+        // const new_user = await User.findById(req.params.id);        
         updates.forEach((value) =>{
-            new_user[value] = req.body[value];
+            // new_user[value] = req.body[value];
+            req.user[value] = req.body[value];
         })        
-        await new_user.save();
+        await req.user.save();
         //const updated =await User.findByIdAndUpdate(req.params.id,req.body,{new : true, runValidators : true}); 
-        if(!new_user){
-            return res.status(404).send();
-        }
-        res.status(200).send(new_user);
+        // if(!req.user){
+        //     return res.status(404).send();
+        // }
+        res.status(200).send(req.user);
     }catch(error){  
         res.status(400).send(error);
     }
@@ -109,14 +110,13 @@ router.patch('/users/:id',async (req,res)=>{
 
 // to use the delete http method
 
-router.delete('/users/:id',async (req,res) =>{
+router.delete('/users/me',auth,async (req,res) =>{
     try{
-        const userDel = await User.findByIdAndDelete(req.params.id);
-        if(!userDel){
-            return res.status(404).send();
-        }
-        res.status(200).send(userDel);
-
+        // const userDel = await User.findByIdAndDelete(req.user._id);
+        // if(!userDel){
+        //     return res.status(404).send();
+        await req.user.remove();
+        res.status(200).send(req.user);          
     }catch(error){
         res.status(500).send();
     }
