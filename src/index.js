@@ -62,22 +62,23 @@ const jwt = require('jsonwebtoken');
 
 
 
-const main  = async () =>{
+// const main  = async () =>{
 
-    // This code is finding a user based on a task id.
+//     // This code is finding a user based on a task id.
 
-    // const task1 = await task.findById('5f4bd3a8d317d37588e6368e');
-    // await task1.populate('owner').execPopulate() // It will find the user associated with the task and task1.owner will be the whole profile
-    // console.log(task1.owner);
+//     // const task1 = await task.findById('5f4bd3a8d317d37588e6368e');
+//     // await task1.populate('owner').execPopulate() // It will find the user associated with the task and task1.owner will be the whole profile
+//     // console.log(task1.owner);
 
-    // this code is finding all the tasks that are created by our user.
-    try{
-    const user = await User.findById('5f4bd23463982d6d8479ee84');
-    await user.populate('tasks').execPopulate()
-    console.log(user.tasks);
-    }catch(error){
-        console.log(error);
-    }
-}
+//     // this code is finding all the tasks that are created by our user.
+//     try{
+//     const user = await User.findById('5f4bd23463982d6d8479ee84');
+//     await user.populate('tasks').execPopulate()
+//     console.log(user.tasks);
+//     }catch(error){
+//         console.log(error);
+//     }
 
-main();
+// }
+
+// main();

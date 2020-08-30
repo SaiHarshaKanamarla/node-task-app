@@ -14,9 +14,24 @@ router.get('/tasks',auth,async (req,res) =>{
     // }).catch((error) =>{
     //     res.status(500).send();
     // })
-    console.log(req.user);
-    const task1 =await task.find({owner : req.user._id});
-    try{        
+    //const task1 =await task.find({owner : req.user._id,path});   
+    const match = {}
+    // if(req.query.completed){
+    //     match.completed = req.query.completed === 'true'
+    // }       
+    try{      
+        // await req.user.populate({
+        //     path : 'tasks',
+        //     match: match
+        // }).execPopulate()  
+        const measure = req.query.completed;
+        if(measure == 'true' || measure == 'false'){
+            var value = (measure == 'true');        
+            var task1 = await task.find({owner : req.user._id,completed : value});
+        }else{
+            var task1 = await task.find({owner : req.user._id});
+        }
+        
         res.status(200).send(task1);
     }catch(error){
         res.status(404).send();
